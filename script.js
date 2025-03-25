@@ -20,6 +20,8 @@ class UltimateJogoDaVelha {
         this.inicializarTabuleiro();
         this.inicializarEventos();
         this.mostrarModalNome();
+        this.ajustarTamanhoCelulas();
+        window.addEventListener('resize', () => this.ajustarTamanhoCelulas());
     }
 
     mostrarModalNome() {
@@ -152,7 +154,7 @@ class UltimateJogoDaVelha {
     adicionarMensagemChat(data) {
         const mensagens = document.getElementById('mensagens');
         const div = document.createElement('div');
-        div.className = 'p-2 rounded';
+        div.className = 'p-2 rounded text-sm sm:text-base';
         
         if (data.jogador === this.nomeJogador) {
             div.classList.add('bg-blue-100', 'text-right');
@@ -163,7 +165,7 @@ class UltimateJogoDaVelha {
         div.innerHTML = `
             <span class="font-bold">${data.jogador}</span>
             <span class="text-xs text-gray-500">${data.timestamp}</span>
-            <p>${data.mensagem}</p>
+            <p class="break-words">${data.mensagem}</p>
         `;
 
         mensagens.appendChild(div);
@@ -173,7 +175,7 @@ class UltimateJogoDaVelha {
     adicionarMensagemSistema(mensagem) {
         const mensagens = document.getElementById('mensagens');
         const div = document.createElement('div');
-        div.className = 'p-2 text-center text-sm text-gray-500';
+        div.className = 'p-2 text-center text-xs sm:text-sm text-gray-500';
         div.textContent = mensagem;
         mensagens.appendChild(div);
         mensagens.scrollTop = mensagens.scrollHeight;
@@ -185,12 +187,13 @@ class UltimateJogoDaVelha {
             const grid = board.querySelector('.grid');
             for (let i = 0; i < 9; i++) {
                 const cell = document.createElement('button');
-                cell.className = 'cell w-full h-12 bg-gray-50 hover:bg-white text-3xl font-bold rounded transition-colors border border-gray-200';
+                cell.className = 'cell w-full bg-gray-50 hover:bg-white font-bold rounded transition-colors border border-gray-200';
                 cell.dataset.board = boardIndex;
                 cell.dataset.cell = i;
                 grid.appendChild(cell);
             }
         });
+        this.ajustarTamanhoCelulas();
     }
 
     inicializarEventos() {
@@ -314,6 +317,22 @@ class UltimateJogoDaVelha {
 
         this.atualizarStatus('Clique em "Procurar Partida" para começar');
         this.adicionarMensagemSistema('O jogo foi reiniciado.');
+    }
+
+    ajustarTamanhoCelulas() {
+        const cells = document.querySelectorAll('.cell');
+        const isMobile = window.innerWidth < 640; // breakpoint sm do Tailwind
+
+        cells.forEach(cell => {
+            // Ajusta o tamanho da fonte e altura das células
+            if (isMobile) {
+                cell.classList.remove('h-12', 'text-3xl');
+                cell.classList.add('h-8', 'text-xl');
+            } else {
+                cell.classList.remove('h-8', 'text-xl');
+                cell.classList.add('h-12', 'text-3xl');
+            }
+        });
     }
 }
 

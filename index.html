@@ -9,9 +9,9 @@
 </head>
 <body class="bg-gray-100 min-h-screen">
     <!-- Modal de Nome -->
-    <div id="modal-nome" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white p-8 rounded-lg shadow-xl max-w-md w-full">
-            <h2 class="text-2xl font-bold mb-4">Bem-vindo!</h2>
+    <div id="modal-nome" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white p-6 sm:p-8 rounded-lg shadow-xl w-full max-w-md">
+            <h2 class="text-xl sm:text-2xl font-bold mb-4">Bem-vindo!</h2>
             <form id="form-nome" class="space-y-4">
                 <div>
                     <label for="nome" class="block text-sm font-medium text-gray-700">Digite seu nome:</label>
@@ -26,94 +26,96 @@
         </div>
     </div>
 
-    <div class="container mx-auto p-4 flex gap-4">
+    <div class="container mx-auto p-4">
         <!-- Área principal do jogo -->
-        <div class="flex-1">
-            <h1 class="text-4xl font-bold text-center mb-4 text-gray-800">Ultimate Jogo da Velha Online</h1>
-            
-            <!-- Menu inicial -->
-            <div id="menu-inicial" class="max-w-md mx-auto text-center mb-8">
-                <button id="procurar-partida" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors">
-                    Procurar Partida
-                </button>
-                <div id="status-conexao" class="mt-4 text-lg text-gray-600"></div>
-            </div>
-
-            <!-- Legenda dos jogadores -->
-            <div class="flex justify-center gap-8 mb-6">
-                <div class="flex items-center gap-2">
-                    <span class="w-4 h-4 bg-blue-600 rounded"></span>
-                    <span class="text-lg" id="jogador-x">Jogador X</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="w-4 h-4 bg-red-600 rounded"></span>
-                    <span class="text-lg" id="jogador-o">Jogador O</span>
-                </div>
-            </div>
-
-            <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
-                <div id="status" class="text-2xl font-semibold text-center mb-6 text-gray-700"></div>
-                <!-- Tabuleiro principal -->
-                <div class="grid grid-cols-3 gap-4" id="main-board">
-                    <!-- 9 mini tabuleiros -->
-                    <div class="mini-board p-2 rounded-lg border-2 border-gray-200">
-                        <div class="grid grid-cols-3 gap-1"></div>
-                    </div>
-                    <div class="mini-board p-2 rounded-lg border-2 border-gray-200">
-                        <div class="grid grid-cols-3 gap-1"></div>
-                    </div>
-                    <div class="mini-board p-2 rounded-lg border-2 border-gray-200">
-                        <div class="grid grid-cols-3 gap-1"></div>
-                    </div>
-                    <div class="mini-board p-2 rounded-lg border-2 border-gray-200">
-                        <div class="grid grid-cols-3 gap-1"></div>
-                    </div>
-                    <div class="mini-board p-2 rounded-lg border-2 border-gray-200">
-                        <div class="grid grid-cols-3 gap-1"></div>
-                    </div>
-                    <div class="mini-board p-2 rounded-lg border-2 border-gray-200">
-                        <div class="grid grid-cols-3 gap-1"></div>
-                    </div>
-                    <div class="mini-board p-2 rounded-lg border-2 border-gray-200">
-                        <div class="grid grid-cols-3 gap-1"></div>
-                    </div>
-                    <div class="mini-board p-2 rounded-lg border-2 border-gray-200">
-                        <div class="grid grid-cols-3 gap-1"></div>
-                    </div>
-                    <div class="mini-board p-2 rounded-lg border-2 border-gray-200">
-                        <div class="grid grid-cols-3 gap-1"></div>
-                    </div>
-                </div>
-                <button id="reset" class="mt-6 w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">
-                    Reiniciar Jogo
-                </button>
-            </div>
-        </div>
-
-        <!-- Sidebar com lista de jogadores e chat -->
-        <div class="w-80 space-y-4">
-            <!-- Lista de Jogadores -->
-            <div class="bg-white rounded-lg shadow-lg p-4">
-                <h2 class="text-xl font-bold mb-3">Jogadores Online</h2>
-                <ul id="lista-jogadores" class="space-y-2">
-                    <!-- Jogadores serão adicionados aqui -->
-                </ul>
-            </div>
-
-            <!-- Chat -->
-            <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col h-[500px]">
-                <h2 class="text-xl font-bold mb-3">Chat</h2>
-                <div id="mensagens" class="flex-1 overflow-y-auto space-y-2 mb-4">
-                    <!-- Mensagens serão adicionadas aqui -->
-                </div>
-                <form id="form-chat" class="flex gap-2">
-                    <input type="text" id="mensagem" placeholder="Digite sua mensagem..."
-                        class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                    <button type="submit"
-                        class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors">
-                        Enviar
+        <div class="flex flex-col lg:flex-row gap-4">
+            <div class="flex-1 order-2 lg:order-1">
+                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-4 text-gray-800">Ultimate Jogo da Velha Online</h1>
+                
+                <!-- Menu inicial -->
+                <div id="menu-inicial" class="max-w-md mx-auto text-center mb-4 sm:mb-8">
+                    <button id="procurar-partida" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-lg text-base sm:text-lg transition-colors">
+                        Procurar Partida
                     </button>
-                </form>
+                    <div id="status-conexao" class="mt-2 sm:mt-4 text-base sm:text-lg text-gray-600"></div>
+                </div>
+
+                <!-- Legenda dos jogadores -->
+                <div class="flex justify-center gap-4 sm:gap-8 mb-4 sm:mb-6">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 sm:w-4 h-3 sm:h-4 bg-blue-600 rounded"></span>
+                        <span class="text-base sm:text-lg" id="jogador-x">Jogador X</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 sm:w-4 h-3 sm:h-4 bg-red-600 rounded"></span>
+                        <span class="text-base sm:text-lg" id="jogador-o">Jogador O</span>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-lg p-3 sm:p-6">
+                    <div id="status" class="text-xl sm:text-2xl font-semibold text-center mb-4 sm:mb-6 text-gray-700"></div>
+                    <!-- Tabuleiro principal -->
+                    <div class="grid grid-cols-3 gap-2 sm:gap-4" id="main-board">
+                        <!-- 9 mini tabuleiros -->
+                        <div class="mini-board p-1 sm:p-2 rounded-lg border-2 border-gray-200">
+                            <div class="grid grid-cols-3 gap-0.5 sm:gap-1"></div>
+                        </div>
+                        <div class="mini-board p-1 sm:p-2 rounded-lg border-2 border-gray-200">
+                            <div class="grid grid-cols-3 gap-0.5 sm:gap-1"></div>
+                        </div>
+                        <div class="mini-board p-1 sm:p-2 rounded-lg border-2 border-gray-200">
+                            <div class="grid grid-cols-3 gap-0.5 sm:gap-1"></div>
+                        </div>
+                        <div class="mini-board p-1 sm:p-2 rounded-lg border-2 border-gray-200">
+                            <div class="grid grid-cols-3 gap-0.5 sm:gap-1"></div>
+                        </div>
+                        <div class="mini-board p-1 sm:p-2 rounded-lg border-2 border-gray-200">
+                            <div class="grid grid-cols-3 gap-0.5 sm:gap-1"></div>
+                        </div>
+                        <div class="mini-board p-1 sm:p-2 rounded-lg border-2 border-gray-200">
+                            <div class="grid grid-cols-3 gap-0.5 sm:gap-1"></div>
+                        </div>
+                        <div class="mini-board p-1 sm:p-2 rounded-lg border-2 border-gray-200">
+                            <div class="grid grid-cols-3 gap-0.5 sm:gap-1"></div>
+                        </div>
+                        <div class="mini-board p-1 sm:p-2 rounded-lg border-2 border-gray-200">
+                            <div class="grid grid-cols-3 gap-0.5 sm:gap-1"></div>
+                        </div>
+                        <div class="mini-board p-1 sm:p-2 rounded-lg border-2 border-gray-200">
+                            <div class="grid grid-cols-3 gap-0.5 sm:gap-1"></div>
+                        </div>
+                    </div>
+                    <button id="reset" class="mt-4 sm:mt-6 w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 sm:py-3 px-4 rounded-lg transition-colors text-base sm:text-lg">
+                        Reiniciar Jogo
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sidebar com lista de jogadores e chat -->
+            <div class="order-1 lg:order-2 lg:w-80 space-y-4">
+                <!-- Lista de Jogadores -->
+                <div class="bg-white rounded-lg shadow-lg p-4">
+                    <h2 class="text-lg sm:text-xl font-bold mb-3">Jogadores Online</h2>
+                    <ul id="lista-jogadores" class="space-y-2">
+                        <!-- Jogadores serão adicionados aqui -->
+                    </ul>
+                </div>
+
+                <!-- Chat -->
+                <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col h-[300px] sm:h-[400px] lg:h-[500px]">
+                    <h2 class="text-lg sm:text-xl font-bold mb-3">Chat</h2>
+                    <div id="mensagens" class="flex-1 overflow-y-auto space-y-2 mb-4">
+                        <!-- Mensagens serão adicionadas aqui -->
+                    </div>
+                    <form id="form-chat" class="flex gap-2">
+                        <input type="text" id="mensagem" placeholder="Digite sua mensagem..."
+                            class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        <button type="submit"
+                            class="bg-blue-500 text-white px-3 sm:px-4 py-2 rounded-md hover:bg-blue-600 transition-colors">
+                            Enviar
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

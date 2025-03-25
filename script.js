@@ -6,6 +6,7 @@ class UltimateJogoDaVelha {
         this.jogoAtivo = false;
         this.simboloJogador = null;
         this.salaId = null;
+        this.nomeJogador = null;
         
         this.combinacoesVitoria = [
             [0, 1, 2], [3, 4, 5], [6, 7, 8], // Linhas
@@ -18,10 +19,36 @@ class UltimateJogoDaVelha {
         this.inicializarSocketEvents();
         this.inicializarTabuleiro();
         this.inicializarEventos();
-        this.atualizarStatus('Clique em "Procurar Partida" para começar');
+        this.mostrarModalNome();
+    }
+
+    mostrarModalNome() {
+        const modal = document.getElementById('modal-nome');
+        const form = document.getElementById('form-nome');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const nome = document.getElementById('nome').value.trim();
+            if (nome) {
+                this.nomeJogador = nome;
+                this.socket.emit('registrarJogador', nome);
+                modal.style.display = 'none';
+                this.atualizarStatus('Clique em "Procurar Partida" para começar');
+            }
+        });
     }
 
     inicializarSocketEvents() {
+        // Atualização da lista de jogadores
+        this.socket.on('listaJogadores', (jogadores) => {
+            this.atualizarListaJogadores(jogadores);
+        });
+
+        // Mensagens do chat
+        this.socket.on('mensagemChat', (data) => {
+            this.adicionarMensagemChat(data);
+        });
+
         // Quando encontra um oponente
         this.socket.on('iniciarPartida', (data) => {
             this.salaId = data.salaId;
@@ -29,7 +56,14 @@ class UltimateJogoDaVelha {
             this.simboloJogador = jogador.simbolo;
             this.jogoAtivo = true;
             this.jogadorAtual = 'X';
-            this.atualizarStatusConexao('Partida iniciada! Você é o jogador ' + this.simboloJogador);
+
+            // Atualiza os nomes dos jogadores na legenda
+            const jogadorX = data.jogadores.find(j => j.simbolo === 'X');
+            const jogadorO = data.jogadores.find(j => j.simbolo === 'O');
+            document.getElementById('jogador-x').textContent = `${jogadorX.nome} (X)`;
+            document.getElementById('jogador-o').textContent = `${jogadorO.nome} (O)`;
+
+            this.atualizarStatusConexao(`Partida iniciada! Você é o jogador ${this.simboloJogador}`);
             this.atualizarStatus();
         });
 
@@ -64,6 +98,9 @@ class UltimateJogoDaVelha {
                     cell.disabled = true;
                 }
             });
+
+            // Adiciona mensagem no chat sobre a vitória do mini tabuleiro
+            this.adicionarMensagemSistema(`${data.nomeJogador} venceu o tabuleiro ${data.boardIndex + 1}!`);
         });
 
         // Quando o jogo termina
@@ -71,15 +108,75 @@ class UltimateJogoDaVelha {
             this.jogoAtivo = false;
             const isX = data.vencedor === 'X';
             const statusElement = document.getElementById('status');
-            statusElement.innerHTML = `<span class="${isX ? 'text-blue-600' : 'text-red-600'} font-bold">Jogador ${data.vencedor}</span> venceu o jogo!`;
+            statusElement.innerHTML = `${data.nomeVencedor} (${data.vencedor}) venceu o jogo!`;
+            this.adicionarMensagemSistema(`${data.nomeVencedor} venceu o jogo!`);
         });
 
         // Quando o oponente desconecta
-        this.socket.on('jogadorDesconectado', () => {
+        this.socket.on('jogadorDesconectado', (data) => {
             this.jogoAtivo = false;
-            this.atualizarStatusConexao('Oponente desconectou. Procure uma nova partida.');
+            this.atualizarStatusConexao(`${data.nomeJogador} desconectou. Procure uma nova partida.`);
+            this.adicionarMensagemSistema(`${data.nomeJogador} desconectou do jogo.`);
             this.reiniciarJogo();
         });
+    }
+
+    atualizarListaJogadores(jogadores) {
+        const lista = document.getElementById('lista-jogadores');
+        lista.innerHTML = '';
+        
+        jogadores.forEach(jogador => {
+            const li = document.createElement('li');
+            li.className = 'flex items-center justify-between p-2 rounded';
+            
+            // Define a cor de fundo baseada no status
+            switch(jogador.status) {
+                case 'jogando':
+                    li.classList.add('bg-green-100');
+                    break;
+                case 'aguardando':
+                    li.classList.add('bg-yellow-100');
+                    break;
+                default:
+                    li.classList.add('bg-gray-100');
+            }
+
+            li.innerHTML = `
+                <span>${jogador.nome}</span>
+                <span class="text-sm text-gray-600">${jogador.status}</span>
+            `;
+            lista.appendChild(li);
+        });
+    }
+
+    adicionarMensagemChat(data) {
+        const mensagens = document.getElementById('mensagens');
+        const div = document.createElement('div');
+        div.className = 'p-2 rounded';
+        
+        if (data.jogador === this.nomeJogador) {
+            div.classList.add('bg-blue-100', 'text-right');
+        } else {
+            div.classList.add('bg-gray-100');
+        }
+
+        div.innerHTML = `
+            <span class="font-bold">${data.jogador}</span>
+            <span class="text-xs text-gray-500">${data.timestamp}</span>
+            <p>${data.mensagem}</p>
+        `;
+
+        mensagens.appendChild(div);
+        mensagens.scrollTop = mensagens.scrollHeight;
+    }
+
+    adicionarMensagemSistema(mensagem) {
+        const mensagens = document.getElementById('mensagens');
+        const div = document.createElement('div');
+        div.className = 'p-2 text-center text-sm text-gray-500';
+        div.textContent = mensagem;
+        mensagens.appendChild(div);
+        mensagens.scrollTop = mensagens.scrollHeight;
     }
 
     inicializarTabuleiro() {
@@ -110,11 +207,20 @@ class UltimateJogoDaVelha {
             this.atualizarStatusConexao('Procurando partida...');
         });
 
+        document.getElementById('form-chat').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const input = document.getElementById('mensagem');
+            const mensagem = input.value.trim();
+            if (mensagem) {
+                this.socket.emit('mensagemChat', mensagem);
+                input.value = '';
+            }
+        });
+
         document.getElementById('reset').addEventListener('click', () => this.reiniciarJogo());
     }
 
     fazerJogada(boardIndex, cellIndex) {
-        // Verifica se pode jogar
         if (!this.jogoAtivo || 
             this.jogadorAtual !== this.simboloJogador ||
             this.miniTabuleiros[boardIndex][cellIndex] !== '' ||
@@ -122,17 +228,14 @@ class UltimateJogoDaVelha {
             return;
         }
 
-        // Faz a jogada no mini tabuleiro
         this.miniTabuleiros[boardIndex][cellIndex] = this.simboloJogador;
         const cell = document.querySelector(`[data-board="${boardIndex}"][data-cell="${cellIndex}"]`);
         cell.textContent = this.simboloJogador;
         cell.classList.add(this.simboloJogador === 'X' ? 'text-blue-600' : 'text-red-600');
 
-        // Verifica vitória no mini tabuleiro
         const vitoriaMiniTabuleiro = this.verificarVitoriaMiniTabuleiro(boardIndex);
         const vitoriaJogo = vitoriaMiniTabuleiro && this.verificarVitoriaPrincipal();
 
-        // Envia a jogada para o servidor
         this.socket.emit('fazerJogada', {
             salaId: this.salaId,
             boardIndex,
@@ -141,7 +244,6 @@ class UltimateJogoDaVelha {
             vitoriaJogo
         });
 
-        // Troca o jogador
         this.jogadorAtual = this.jogadorAtual === 'X' ? 'O' : 'X';
         this.atualizarStatus();
     }
@@ -172,17 +274,13 @@ class UltimateJogoDaVelha {
         });
     }
 
-    verificarEmpateMiniTabuleiro(boardIndex) {
-        return this.miniTabuleiros[boardIndex].every(cell => cell !== '');
-    }
-
     atualizarStatus() {
         const statusElement = document.getElementById('status');
         if (this.jogoAtivo) {
             const suaVez = this.jogadorAtual === this.simboloJogador;
             statusElement.innerHTML = suaVez ? 
-                `Sua vez! (${this.simboloJogador})` :
-                `Vez do oponente (${this.jogadorAtual})`;
+                `Sua vez!` :
+                `Aguardando jogada do oponente...`;
         }
     }
 
@@ -197,7 +295,6 @@ class UltimateJogoDaVelha {
         this.jogadorAtual = 'X';
         this.jogoAtivo = false;
 
-        // Restaura o estado visual inicial
         document.querySelectorAll('.mini-board').forEach(board => {
             board.classList.remove('bg-blue-200', 'bg-red-200', 'bg-gray-200');
             board.classList.add('border-2', 'border-gray-200');
@@ -211,7 +308,12 @@ class UltimateJogoDaVelha {
             });
         });
 
+        // Reseta os nomes dos jogadores na legenda
+        document.getElementById('jogador-x').textContent = 'Jogador X';
+        document.getElementById('jogador-o').textContent = 'Jogador O';
+
         this.atualizarStatus('Clique em "Procurar Partida" para começar');
+        this.adicionarMensagemSistema('O jogo foi reiniciado.');
     }
 }
 
